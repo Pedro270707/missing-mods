@@ -3,7 +3,6 @@ package net.pedroricardo.missingmods.client;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonStreamParser;
 import com.google.gson.stream.JsonReader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
@@ -18,7 +17,6 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.realms.util.TextRenderingUtils;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -30,11 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Enumeration;
-import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 public class MissingModWidget extends ClickableWidget {
     private static final Text DOWNLOAD_TEXT = Text.translatable("missingmods.mod.download").formatted(Formatting.BLUE, Formatting.UNDERLINE);
@@ -42,6 +37,7 @@ public class MissingModWidget extends ClickableWidget {
     private final Mod mod;
     private final TextRenderer textRenderer;
     private final Screen parent;
+    private boolean modPresent = false;
 
     public MissingModWidget(int x, int y, int width, int height, Mod mod, TextRenderer textRenderer, Screen parent) {
         super(x, y, width, height, Text.translatable("missingmods.mod", Text.literal(mod.id()).formatted(Formatting.YELLOW), mod.validVersions()));
@@ -56,13 +52,11 @@ public class MissingModWidget extends ClickableWidget {
 
     @Override
     protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-        boolean modInstalled = this.checkForMod();
-        if (modInstalled || !this.isSelected()) {
-            Text message = modInstalled ? this.getMessage().copy().formatted(Formatting.STRIKETHROUGH) : this.getMessage();
-            int color = modInstalled ? 0x99FFFFFF : 0xFFFFFFFF;
+        if (this.modPresent || !this.isSelected()) {
+            Text message = this.modPresent ? this.getMessage().copy().formatted(Formatting.STRIKETHROUGH) : this.getMessage();
+            int color = this.modPresent ? 0x99FFFFFF : 0xFFFFFFFF;
             this.drawLeftAlignedScrollableText(context, this.textRenderer, message, 0, color);
-//            context.drawText(this.textRenderer, message, this.getX() + 4, this.getY() + 5, color, true);
-            if (modInstalled) {
+            if (this.modPresent) {
                 context.drawTexture(new Identifier("textures/gui/checkmark.png"), this.getX() + 9 + this.textRenderer.getWidth(message), this.getY() + 5, 0.0f, 0.0f, 9, 8, 9, 8);
             }
         } else {
@@ -99,7 +93,7 @@ public class MissingModWidget extends ClickableWidget {
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-        if (!this.checkForMod()) {
+        if (!this.modPresent) {
             MinecraftClient.getInstance().setScreen(new ConfirmLinkScreen(confirmed -> {
                 if (confirmed) {
                     Util.getOperatingSystem().open(this.mod.link());
@@ -113,6 +107,10 @@ public class MissingModWidget extends ClickableWidget {
     @Override
     protected void appendClickableNarrations(NarrationMessageBuilder builder) {
 
+    }
+
+    public void update() {
+        this.modPresent = this.checkForMod();
     }
 
     private boolean checkForMod() {
@@ -145,5 +143,9 @@ public class MissingModWidget extends ClickableWidget {
             }
         }
         return false;
+    }
+
+    public boolean isModPresent() {
+        return this.modPresent;
     }
 }

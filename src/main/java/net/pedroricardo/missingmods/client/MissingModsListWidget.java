@@ -11,25 +11,45 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.pedroricardo.missingmods.config.Mod;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class MissingModsListWidget extends ElementListWidget<MissingModsListWidget.Entry> {
+    private final List<ModEntry> required;
+    private final List<ModEntry> optional;
+
     public MissingModsListWidget(MinecraftClient client, MissingModsScreen parent, List<Mod> required, List<Mod> optional) {
         super(client, parent.width, parent.height, 32, parent.height - 64, 17);
+        List<ModEntry> requiredEntries = new ArrayList<>();
+        List<ModEntry> optionalEntries = new ArrayList<>();
         if (!required.isEmpty()) {
             this.addEntry(new CategoryEntry(Text.translatable("missingmods.screen.required")));
         }
         for (Mod mod : required) {
-            this.addEntry(new ModEntry(new MissingModWidget(232, mod, client.textRenderer, parent)));
+            ModEntry entry = new ModEntry(new MissingModWidget(232, mod, client.textRenderer, parent));
+            this.addEntry(entry);
+            requiredEntries.add(entry);
         }
         if (!optional.isEmpty()) {
             this.addEntry(new CategoryEntry(Text.translatable("missingmods.screen.optional")));
         }
         for (Mod mod : optional) {
-            this.addEntry(new ModEntry(new MissingModWidget(232, mod, client.textRenderer, parent)));
+            ModEntry entry = new ModEntry(new MissingModWidget(232, mod, client.textRenderer, parent));
+            this.addEntry(entry);
+            optionalEntries.add(entry);
         }
+        this.required = Collections.unmodifiableList(requiredEntries);
+        this.optional = Collections.unmodifiableList(optionalEntries);
+    }
+
+    public List<ModEntry> getRequiredModEntries() {
+        return this.required;
+    }
+
+    public List<ModEntry> getOptionalModEntries() {
+        return this.optional;
     }
 
     @Environment(EnvType.CLIENT)
@@ -81,6 +101,10 @@ public class MissingModsListWidget extends ElementListWidget<MissingModsListWidg
             this.widget.setX(x);
             this.widget.setY(y);
             this.widget.render(context, mouseX, mouseY, tickDelta);
+        }
+
+        public MissingModWidget getWidget() {
+            return this.widget;
         }
     }
 
