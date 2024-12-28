@@ -59,7 +59,7 @@ public class MissingModsScreen extends Screen {
             Util.getOperatingSystem().open(((FabricLoaderImpl) FabricLoader.getInstance()).getModsDirectory());
         }).width(bottomButtonWidth).build());
         ButtonWidget ignoreAndPlay = this.addDrawableChild(new ButtonWidget.Builder(Text.translatable("missingmods.screen.ignore_and_play"), button -> {
-            Util.getOperatingSystem().open(((FabricLoaderImpl) FabricLoader.getInstance()).getModsDirectory());
+            this.client.setScreen(null);
         }).width(bottomButtonWidth).build());
 
         topButtons.add(openAll);
