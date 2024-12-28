@@ -9,46 +9,31 @@ import java.util.List;
 public class MissingModsServer implements DedicatedServerModInitializer {
     @Override
     public void onInitializeServer() {
-        List<Mod> requiredMods = MissingMods.CONFIG.required.get();
-        boolean hasAllRequiredMods = true;
-        for (Mod mod : requiredMods) {
-            if (!mod.environment().matches(FabricLoader.getInstance().getEnvironmentType())) continue;
-            if (!FabricLoader.getInstance().isModLoaded(mod.id()) || !mod.validVersions().test(FabricLoader.getInstance().getModContainer(mod.id()).get().getMetadata().getVersion())) {
-                if (hasAllRequiredMods) {
-                    MissingMods.LOGGER.error("Some required mods are missing!");
-                    hasAllRequiredMods = false;
-                }
-                String version;
-                if (mod.validVersions().toString().equals("*")) {
-                    version = "any version";
-                } else {
-                    version = "version " + mod.validVersions();
-                }
-                MissingMods.LOGGER.info("Install " + mod.id() + ", " + version + ": " + mod.link());
-                mod.reason().ifPresent(reason -> MissingMods.LOGGER.info("  - Reason: " + reason.getString()));
-            }
+        List<Mod> missingRequiredMods = MissingMods.getMissingMods(MissingMods.CONFIG.required.get());
+        if (!missingRequiredMods.isEmpty()) {
+            MissingMods.LOGGER.warn("Some required mods are missing!");
         }
-        List<Mod> optionalMods = MissingMods.CONFIG.optional.get();
-        boolean hasAllOptionalMods = true;
-        for (Mod mod : optionalMods) {
-            if (!mod.environment().matches(FabricLoader.getInstance().getEnvironmentType())) continue;
-            if (!FabricLoader.getInstance().isModLoaded(mod.id()) || !mod.validVersions().test(FabricLoader.getInstance().getModContainer(mod.id()).get().getMetadata().getVersion())) {
-                if (hasAllOptionalMods) {
-                    MissingMods.LOGGER.warn("Some optional mods are missing!");
-                    hasAllOptionalMods = false;
-                }
-                String version;
-                if (mod.validVersions().toString().equals("*")) {
-                    version = "any version";
-                } else {
-                    version = "version " + mod.validVersions();
-                }
-                MissingMods.LOGGER.info("Install " + mod.id() + ", " + version + ": " + mod.link());
-                mod.reason().ifPresent(reason -> MissingMods.LOGGER.info("  - Reason: " + reason.getString()));
-            }
+        missingRequiredMods.forEach(MissingModsServer::logMissingMod);
+
+        List<Mod> missingOptionalMods = MissingMods.getMissingMods(MissingMods.CONFIG.optional.get());
+        if (!missingOptionalMods.isEmpty()) {
+            MissingMods.LOGGER.warn("Some optional mods are missing!");
         }
-        if (!hasAllRequiredMods) {
+        missingOptionalMods.forEach(MissingModsServer::logMissingMod);
+
+        if (!missingRequiredMods.isEmpty()) {
             System.exit(1);
         }
+    }
+
+    private static void logMissingMod(Mod mod) {
+        String version;
+        if (mod.validVersions().toString().equals("*")) {
+            version = "any version";
+        } else {
+            version = "version " + mod.validVersions();
+        }
+        MissingMods.LOGGER.info("Install " + mod.id() + ", " + version + ": " + mod.link());
+        mod.reason().ifPresent(reason -> MissingMods.LOGGER.info("  - Reason: " + reason.getString()));
     }
 }

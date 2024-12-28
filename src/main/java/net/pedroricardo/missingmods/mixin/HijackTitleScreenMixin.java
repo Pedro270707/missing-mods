@@ -27,23 +27,11 @@ public class HijackTitleScreenMixin {
     private void missingmods$hijackTitleScreen(CallbackInfo ci) {
         if (!hasSeenMissingModsScreen) {
             hasSeenMissingModsScreen = true;
-            List<Mod> requiredMods = MissingMods.CONFIG.required.get();
-            List<Mod> missingRequiredMods = new ArrayList<>();
-            for (Mod mod : requiredMods) {
-                if (!mod.environment().matches(FabricLoader.getInstance().getEnvironmentType())) continue;
-                if (!FabricLoader.getInstance().isModLoaded(mod.id()) || !mod.validVersions().test(FabricLoader.getInstance().getModContainer(mod.id()).get().getMetadata().getVersion())) {
-                    missingRequiredMods.add(mod);
-                }
+            List<Mod> missingRequiredMods = MissingMods.getMissingMods(MissingMods.CONFIG.required.get());
+            List<Mod> missingOptionalMods = MissingMods.getMissingMods(MissingMods.CONFIG.optional.get());
+            if (!missingRequiredMods.isEmpty() || !missingOptionalMods.isEmpty()) {
+                MinecraftClient.getInstance().setScreen(new MissingModsScreen(missingRequiredMods, missingOptionalMods));
             }
-            List<Mod> optionalMods = MissingMods.CONFIG.optional.get();
-            List<Mod> missingOptionalMods = new ArrayList<>();
-            for (Mod mod : optionalMods) {
-                if (!mod.environment().matches(FabricLoader.getInstance().getEnvironmentType())) continue;
-                if (!FabricLoader.getInstance().isModLoaded(mod.id()) || !mod.validVersions().test(FabricLoader.getInstance().getModContainer(mod.id()).get().getMetadata().getVersion())) {
-                    missingOptionalMods.add(mod);
-                }
-            }
-            MinecraftClient.getInstance().setScreen(new MissingModsScreen(missingRequiredMods, missingOptionalMods));
         }
     }
 }
