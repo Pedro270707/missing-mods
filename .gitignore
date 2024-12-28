@@ -329,3 +329,6 @@
 /build/classes/java/main/net/pedroricardo/missingmods/config/SimpleConfig.class
 /build/tmp/compileJava/compileTransaction/stash-dir/SimpleConfig.class.uniqueId2
 /build/classes/java/main/net/pedroricardo/missingmods/config/SimpleConfigLoader.class
+/build/
+/.gradle/
+/run/
