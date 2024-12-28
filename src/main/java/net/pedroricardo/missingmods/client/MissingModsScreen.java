@@ -91,6 +91,11 @@ public class MissingModsScreen extends Screen {
     }
 
     @Override
+    public boolean shouldCloseOnEsc() {
+        return false;
+    }
+
+    @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
         this.missingModList.render(context, mouseX, mouseY, delta);
