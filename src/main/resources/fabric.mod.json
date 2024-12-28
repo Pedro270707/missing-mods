@@ -4,17 +4,25 @@
   "version": "${version}",
   "name": "Missing Mods",
   "description": "Adds a screen which warns the user about missing mods",
-  "authors": [],
-  "contact": {},
+  "authors": [
+    "Pedro Ricardo"
+  ],
+  "contact": {
+    "website": "https://pedroricardo.net",
+    "sources": "https://github.com/Pedro270707/missing-mods"
+  },
   "license": "MIT",
   "icon": "assets/missingmods/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": [
-      "net.pedroricardo.missingmods.client.MissingModsClient"
+      "net.pedroricardo.missingmods.MissingModsClient"
     ],
     "main": [
       "net.pedroricardo.missingmods.MissingMods"
+    ],
+    "server": [
+      "net.pedroricardo.missingmods.MissingModsServer"
     ]
   },
   "mixins": [

@@ -6,6 +6,7 @@
   "mixins": [
   ],
   "client": [
+    "HijackTitleScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,0 +1,9 @@
+{
+  "missingmods.screen.title": "You are missing some mods!",
+  "missingmods.screen.required": "Required",
+  "missingmods.screen.optional": "Optional",
+  "missingmods.screen.ignore_and_play": "Ignore and Play",
+  "missingmods.screen.quit_game": "Quit Game",
+  "missingmods.mod": "Install %s, version %s.",
+  "missingmods.mod.download": "Download"
+}

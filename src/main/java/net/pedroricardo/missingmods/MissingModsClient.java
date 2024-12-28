@@ -1,4 +1,4 @@
-package net.pedroricardo.missingmods.client;
+package net.pedroricardo.missingmods;
 
 import net.fabricmc.api.ClientModInitializer;
 
