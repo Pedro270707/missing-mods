@@ -23,6 +23,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 import net.pedroricardo.missingmods.config.Mod;
 
 import java.io.File;
@@ -59,15 +60,40 @@ public class MissingModWidget extends ClickableWidget {
         if (modInstalled || !this.isSelected()) {
             Text message = modInstalled ? this.getMessage().copy().formatted(Formatting.STRIKETHROUGH) : this.getMessage();
             int color = modInstalled ? 0x99FFFFFF : 0xFFFFFFFF;
-            context.drawText(this.textRenderer, message, this.getX() + 4, this.getY() + 5, color, true);
+            this.drawLeftAlignedScrollableText(context, this.textRenderer, message, 0, color);
+//            context.drawText(this.textRenderer, message, this.getX() + 4, this.getY() + 5, color, true);
             if (modInstalled) {
                 context.drawTexture(new Identifier("textures/gui/checkmark.png"), this.getX() + 9 + this.textRenderer.getWidth(message), this.getY() + 5, 0.0f, 0.0f, 9, 8, 9, 8);
             }
         } else {
-            context.drawText(this.textRenderer, DOWNLOAD_TEXT, this.getX() + 4, this.getY() + 5, 0xFFFFFFFF, true);
+            this.drawLeftAlignedScrollableText(context, this.textRenderer, DOWNLOAD_TEXT, 0, 0xFFFFFFFF);
         }
         if (this.isHovered() && this.mod.reason().isPresent()) {
             context.drawTooltip(this.textRenderer, Tooltip.of(this.mod.reason().get()).getLines(MinecraftClient.getInstance()), HoveredTooltipPositioner.INSTANCE, mouseX, mouseY);
+        }
+    }
+
+    protected void drawLeftAlignedScrollableText(DrawContext context, TextRenderer textRenderer, Text text, int xMargin, int color) {
+        int i = this.getX() + xMargin;
+        int j = this.getX() + this.getWidth() - xMargin;
+        drawLeftAlignedScrollableText(context, textRenderer, text, i, this.getY(), j, this.getY() + this.getHeight(), color);
+    }
+
+    protected static void drawLeftAlignedScrollableText(DrawContext context, TextRenderer textRenderer, Text text, int left, int top, int right, int bottom, int color) {
+        int width = textRenderer.getWidth(text);
+        int textTop = (top + bottom - textRenderer.fontHeight) / 2 + 1;
+        int widgetWidth = right - left;
+        if (width > widgetWidth) {
+            int overflow = width - widgetWidth;
+            double time = (double)Util.getMeasuringTimeMs() / 1000.0;
+            double speed = Math.max((double)overflow * 0.5, 3.0);
+            double displacement = Math.sin(1.5707963267948966 * Math.cos(Math.PI * 2 * time / speed)) / 2.0 + 0.5;
+            double lerped = MathHelper.lerp(displacement, 0.0, overflow);
+            context.enableScissor(left, top, right, bottom);
+            context.drawTextWithShadow(textRenderer, text, left - (int)lerped, textTop, color);
+            context.disableScissor();
+        } else {
+            context.drawText(textRenderer, text, left, textTop, color, true);
         }
     }
 
