@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "missingmods",
+  "version": "${version}",
+  "name": "Missing Mods",
+  "description": "Adds a screen which warns the user about missing mods",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/missingmods/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "net.pedroricardo.missingmods.client.MissingModsClient"
+    ],
+    "main": [
+      "net.pedroricardo.missingmods.MissingMods"
+    ]
+  },
+  "mixins": [
+    "missingmods.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
