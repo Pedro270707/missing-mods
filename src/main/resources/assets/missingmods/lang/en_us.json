@@ -3,6 +3,9 @@
   "missingmods.screen.required": "Required",
   "missingmods.screen.optional": "Optional",
   "missingmods.screen.ignore_and_play": "Ignore and Play",
+  "missingmods.screen.open_mod_directory": "Open Mod Folder",
+  "missingmods.screen.open_required": "Open Required",
+  "missingmods.screen.open_all": "Open All",
   "missingmods.screen.quit_game": "Quit Game",
   "missingmods.mod": "Install %s, version %s.",
   "missingmods.mod.download": "Download"
