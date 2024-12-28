@@ -16,6 +16,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -23,11 +24,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.pedroricardo.missingmods.config.Mod;
+import org.joml.Vector2i;
+import org.joml.Vector2ic;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -52,19 +56,27 @@ public class MissingModWidget extends ClickableWidget {
 
     @Override
     protected void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-        if (this.modPresent || !this.isSelected()) {
-            Text message = this.modPresent ? this.getMessage().copy().formatted(Formatting.STRIKETHROUGH) : this.getMessage();
-            int color = this.modPresent ? 0x99FFFFFF : 0xFFFFFFFF;
-            this.drawLeftAlignedScrollableText(context, this.textRenderer, message, 0, color);
-            if (this.modPresent) {
-                context.drawTexture(new Identifier("textures/gui/checkmark.png"), this.getX() + 9 + this.textRenderer.getWidth(message), this.getY() + 5, 0.0f, 0.0f, 9, 8, 9, 8);
-            }
-        } else {
-            this.drawLeftAlignedScrollableText(context, this.textRenderer, DOWNLOAD_TEXT, 0, 0xFFFFFFFF);
+        Text message = this.modPresent ? this.getMessage().copy().formatted(Formatting.STRIKETHROUGH) : this.getMessage();
+        int color = this.modPresent ? 0x99FFFFFF : 0xFFFFFFFF;
+        this.drawLeftAlignedScrollableText(context, this.textRenderer, message, 2, color);
+        if (this.modPresent) {
+            context.drawTexture(new Identifier("textures/gui/checkmark.png"), this.getX() + 9 + this.textRenderer.getWidth(message), this.getY() + 5, 0.0f, 0.0f, 9, 8, 9, 8);
+        }
+        if (!this.modPresent && this.isSelected()) {
+            context.getMatrices().translate(0.0f, 0.0f, 1.0f);
+            context.fill(this.getX(), this.getY(), this.getX() + this.getWidth(), this.getY() + this.getHeight(), 0xDD000000);
+            this.drawScrollableText(context, this.textRenderer, DOWNLOAD_TEXT, 2, 0xFFFFFFFF);
+            context.getMatrices().translate(0.0f, 0.0f, -1.0f);
         }
         if (this.isHovered() && this.mod.reason().isPresent()) {
             context.drawTooltip(this.textRenderer, Tooltip.of(this.mod.reason().get()).getLines(MinecraftClient.getInstance()), HoveredTooltipPositioner.INSTANCE, mouseX, mouseY);
         }
+    }
+
+    protected void drawScrollableText(DrawContext context, TextRenderer textRenderer, Text text, int xMargin, int color) {
+        int i = this.getX() + xMargin;
+        int j = this.getX() + this.getWidth() - xMargin;
+        drawScrollableText(context, textRenderer, text, i, this.getY(), j, this.getY() + this.getHeight(), color);
     }
 
     protected void drawLeftAlignedScrollableText(DrawContext context, TextRenderer textRenderer, Text text, int xMargin, int color) {
