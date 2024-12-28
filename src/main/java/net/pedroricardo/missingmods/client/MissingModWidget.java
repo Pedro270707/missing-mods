@@ -15,7 +15,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.realms.util.TextRenderingUtils;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -62,6 +65,9 @@ public class MissingModWidget extends ClickableWidget {
             }
         } else {
             context.drawText(this.textRenderer, DOWNLOAD_TEXT, this.getX() + 4, this.getY() + 5, 0xFFFFFFFF, true);
+        }
+        if (this.isHovered() && this.mod.reason().isPresent()) {
+            context.drawTooltip(this.textRenderer, Tooltip.of(this.mod.reason().get()).getLines(MinecraftClient.getInstance()), HoveredTooltipPositioner.INSTANCE, mouseX, mouseY);
         }
     }
 
